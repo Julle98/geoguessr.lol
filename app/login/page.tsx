@@ -21,44 +21,88 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="max-w-sm w-full">
-        <h1 className="font-display text-4xl font-extrabold gradient-text mb-2">Kirjaudu</h1>
-        <p className="text-white/40 font-body mb-8">Tallenna pisteet ja seuraa tilastojasi.</p>
-        <div className="glass rounded-2xl p-6 space-y-4">
-          {error && <div className="text-red-400 text-sm font-body bg-red-400/10 rounded-xl px-4 py-2">{error}</div>}
-          <div>
-            <label className="text-white/40 text-xs font-body block mb-1">Sähköposti</label>
-            <input
-              type="email" value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full bg-earth-800 border border-white/10 rounded-xl px-4 py-3 text-white font-body focus:outline-none focus:border-accent-green/50 transition-colors"
-              placeholder="sinä@esimerkki.fi"
-            />
+    <>
+      <div className="app-bg" /><div className="app-sun" /><div className="app-grid" /><div className="app-overlay" />
+      <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <div style={{ maxWidth: 400, width: '100%' }}>
+
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: '.08em', color: 'var(--text-mute)', textDecoration: 'none', textTransform: 'uppercase', marginBottom: 36 }}>
+            ← Takaisin
+          </Link>
+
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: '.3em', color: 'var(--neon-cyan)', textTransform: 'uppercase', textShadow: '0 0 6px rgba(0,240,255,.45)', marginBottom: 8 }}>
+            // kirjaudu
           </div>
-          <div>
-            <label className="text-white/40 text-xs font-body block mb-1">Salasana</label>
-            <input
-              type="password" value={password} onChange={e => setPassword(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              className="w-full bg-earth-800 border border-white/10 rounded-xl px-4 py-3 text-white font-body focus:outline-none focus:border-accent-green/50 transition-colors"
-              placeholder="••••••••"
-            />
-          </div>
-          <button
-            onClick={handleLogin} disabled={loading}
-            className="w-full py-3 rounded-xl font-display font-bold bg-accent-green text-earth-900 hover:bg-accent-lime active:scale-95 transition-all disabled:opacity-50"
-          >
-            {loading ? 'Kirjaudutaan...' : 'Kirjaudu sisään'}
-          </button>
-          <p className="text-center text-white/30 text-sm font-body">
-            Ei tiliä?{' '}
-            <Link href="/register" className="text-accent-green hover:underline">Rekisteröidy</Link>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 48, color: 'var(--text-bright)', margin: '0 0 8px', lineHeight: 1 }}>
+            <span style={{ color: 'var(--neon-magenta)', textShadow: 'var(--glow-mag)' }}>Tervetuloa</span> takaisin.
+          </h1>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--text-mute)', margin: '0 0 28px' }}>
+            Tallenna pisteet ja seuraa tilastojasi.
           </p>
-        </div>
-        <div className="mt-4 text-center">
-          <Link href="/" className="text-white/30 text-sm hover:text-white/60 font-body">← Takaisin</Link>
+
+          <div style={{ background: 'linear-gradient(180deg, rgba(29,18,72,.9), rgba(21,10,54,.9))', border: '1px solid var(--line)', borderRadius: 10, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+            {error && (
+              <div style={{ background: 'rgba(255,45,100,.08)', border: '1px solid rgba(255,45,100,.35)', borderRadius: 6, padding: '10px 14px', fontFamily: 'var(--font-mono)', fontSize: 12, color: '#ff6b8a' }}>
+                ⚠ {error}
+              </div>
+            )}
+
+            <Field label="Sähköposti">
+              <input
+                type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="sinä@esimerkki.fi"
+                style={inputStyle}
+              />
+            </Field>
+
+            <Field label="Salasana">
+              <input
+                type="password" value={password} onChange={e => setPassword(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                placeholder="••••••••"
+                style={inputStyle}
+              />
+            </Field>
+
+            <button
+              onClick={handleLogin} disabled={loading}
+              style={{
+                width: '100%', padding: '14px', borderRadius: 6, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+                fontFamily: 'var(--font-display)', fontSize: 13, letterSpacing: '.1em', textTransform: 'uppercase',
+                background: loading ? 'rgba(255,45,149,.4)' : 'linear-gradient(180deg, var(--neon-magenta), #c61878)',
+                color: 'white', boxShadow: loading ? 'none' : '0 0 0 2px rgba(255,255,255,.1) inset, 0 4px 0 #7a0c46, 0 0 24px rgba(255,45,149,.5)',
+                opacity: loading ? 0.7 : 1, marginTop: 4,
+              }}
+            >
+              {loading ? 'Kirjaudutaan...' : 'Kirjaudu sisään'}
+            </button>
+
+            <p style={{ textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-mute)', margin: 0 }}>
+              Ei tiliä?{' '}
+              <Link href="/register" style={{ color: 'var(--neon-cyan)', textDecoration: 'none' }}>Rekisteröidy →</Link>
+            </p>
+          </div>
         </div>
       </div>
+    </>
+  )
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label style={{ fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '.15em', color: 'var(--text-mute)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+        {label}
+      </label>
+      {children}
     </div>
   )
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', padding: '11px 14px', borderRadius: 6, border: '1px solid var(--line)',
+  background: 'rgba(7,2,26,.6)', color: 'var(--text-bright)',
+  fontFamily: 'var(--font-body)', fontSize: 14,
+  outline: 'none', boxSizing: 'border-box',
 }

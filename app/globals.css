@@ -3,29 +3,72 @@
 @tailwind utilities;
 
 :root {
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  /* Neon arcade palette */
+  --bg-deep:      #07021a;
+  --bg-base:      #0c0526;
+  --bg-panel:     #150a36;
+  --bg-panel-2:   #1d1248;
+  --line:         #3a1f7a;
+  --line-soft:    #2a1660;
+
+  --neon-magenta: #ff2d95;
+  --neon-cyan:    #00f0ff;
+  --neon-amber:   #ffd60a;
+  --neon-violet:  #b14dff;
+  --neon-coral:   #ff6b35;
+
+  --text-bright:  #fff5ff;
+  --text-base:    #e9defc;
+  --text-mute:    #a08fce;
+  --text-dim:     #6a5a96;
+
+  --glow-mag:  0 0 12px rgba(255,45,149,.55), 0 0 28px rgba(255,45,149,.25);
+  --glow-cyan: 0 0 12px rgba(0,240,255,.55),  0 0 28px rgba(0,240,255,.25);
+  --glow-amber:0 0 10px rgba(255,214,10,.55),  0 0 24px rgba(255,214,10,.25);
+
+  /* --font-display, --font-body, --font-mono are injected by Next.js font system via layout.tsx */
+  --font-display-fallback: 'Arial Black', sans-serif;
+  --font-mono-fallback:    monospace;
+  --font-body-fallback:    system-ui, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-/* Noise texture overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.4;
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--bg-deep);
+  color: var(--text-base);
+  font-family: var(--font-body, var(--font-body-fallback));
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0a0f0d; }
-::-webkit-scrollbar-thumb { background: #4ade80; border-radius: 2px; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--neon-magenta); border-radius: 3px; }
+
+/* Selection */
+::selection { background: var(--neon-cyan); color: var(--bg-deep); }
+
+/* Glass panel */
+.glass {
+  background: linear-gradient(180deg, rgba(29,18,72,.85), rgba(21,10,54,.85));
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+}
+
+/* Gradient text — neon */
+.gradient-text {
+  background: linear-gradient(135deg, var(--neon-magenta) 0%, var(--neon-cyan) 60%, var(--neon-amber) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 /* Map containers */
 .street-view-container {
@@ -34,7 +77,6 @@ body::before {
   position: relative;
   overflow: hidden;
 }
-
 .guess-map-container {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -42,9 +84,8 @@ body::before {
 /* Score reveal animation */
 @keyframes drawLine {
   from { stroke-dashoffset: 1000; }
-  to { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 0; }
 }
-
 .score-line {
   stroke-dasharray: 1000;
   animation: drawLine 1s ease forwards 0.3s;
@@ -52,40 +93,132 @@ body::before {
 
 /* Pulse ring for markers */
 @keyframes pulseRing {
-  0% { transform: scale(0.8); opacity: 1; }
-  100% { transform: scale(2); opacity: 0; }
+  0%   { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2);   opacity: 0; }
 }
-
 .pulse-ring::before {
   content: '';
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 2px solid #4ade80;
+  border: 2px solid var(--neon-cyan);
   animation: pulseRing 1.5s ease-out infinite;
 }
 
 /* Timer bar */
 @keyframes timerDrain {
   from { width: 100%; }
-  to { width: 0%; }
+  to   { width: 0%; }
+}
+.timer-bar { animation: timerDrain linear forwards; }
+
+/* Arcade background layers */
+.app-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,45,149,.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 0%,  rgba(0,240,255,.12),  transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(177,77,255,.10), transparent 55%),
+    linear-gradient(180deg, #06011a 0%, #0a0428 50%, #1a073a 100%);
 }
 
-.timer-bar {
-  animation: timerDrain linear forwards;
+.app-sun {
+  position: fixed; left: 50%; bottom: 32vh;
+  transform: translateX(-50%);
+  width: 340px; height: 340px; border-radius: 50%;
+  background: linear-gradient(180deg, #ffd60a 0%, #ff6b35 35%, #ff2d95 65%, transparent 70%);
+  z-index: 0; pointer-events: none;
+  filter: blur(.5px);
+  mask: linear-gradient(to bottom, black 0%, black 50%, transparent 80%),
+        repeating-linear-gradient(to bottom, black 0 14px, transparent 14px 22px);
+  -webkit-mask: linear-gradient(to bottom, black 0%, black 50%, transparent 80%),
+        repeating-linear-gradient(to bottom, black 0 14px, transparent 14px 22px);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  opacity: .7;
 }
 
-/* Glass morphism card */
-.glass {
-  background: rgba(26, 40, 32, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(74, 222, 128, 0.12);
+.app-grid {
+  position: fixed; bottom: -20vh; left: -10vw; right: -10vw;
+  height: 60vh; z-index: 0; pointer-events: none;
+}
+.app-grid::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,45,149,.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: rotateX(62deg) translateY(0);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to top, black 30%, transparent 100%);
+  animation: gridScroll 8s linear infinite;
+  opacity: .8;
+}
+@keyframes gridScroll {
+  0%   { background-position: 0 0,    0 0; }
+  100% { background-position: 0 60px, 0 60px; }
 }
 
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #4ade80 0%, #a3e635 50%, #fbbf24 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.app-overlay {
+  position: fixed; inset: 0; z-index: 9000; pointer-events: none;
+  mix-blend-mode: overlay;
+}
+.app-overlay::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    to bottom, rgba(255,255,255,.04) 0, rgba(255,255,255,.04) 1px,
+    transparent 1px, transparent 3px
+  );
+  opacity: .12;
+}
+.app-overlay::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.75) 100%);
+  opacity: .5;
+  mix-blend-mode: multiply;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fadeUp .45s ease-out backwards; }
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: .55; }
+}
+.flicker { animation: flicker 5s infinite; }
+
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .5; }
+}
+.animate-pulse-slow { animation: pulse 3s ease-in-out infinite; }
+
+/* Leaflet dark theme */
+.leaflet-container {
+  background: var(--bg-deep) !important;
+}
+.leaflet-tile {
+  filter: invert(.92) hue-rotate(180deg) brightness(.85) contrast(1.15) saturate(.7);
+}
+.leaflet-control-attribution {
+  background: rgba(7,2,26,.7) !important;
+  color: var(--text-dim) !important;
+  font-size: 9px !important;
+}
+.leaflet-control-zoom a {
+  background: var(--bg-panel) !important;
+  color: var(--neon-cyan) !important;
+  border: 1px solid var(--line) !important;
 }

@@ -25,6 +25,10 @@ export default function PlayPage() {
   const locationIndexRef = useRef(0)
 
   useEffect(() => {
+    return () => { resetGame() }
+  }, [])
+
+  useEffect(() => {
     if (phase !== 'loading') return
     async function load() {
       const loc = USE_DEV_LOCATIONS
@@ -56,34 +60,58 @@ export default function PlayPage() {
   // ── Menu ─────────────────────────────────────────────────────────────────
   if (phase === 'menu') {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="max-w-md w-full">
-          <Link href="/" className="flex items-center gap-2 text-white/30 hover:text-white/70 mb-10 transition-colors font-body text-sm">← Takaisin</Link>
-          <h1 className="font-display text-5xl font-extrabold gradient-text mb-2">Street View</h1>
-          <p className="text-white/40 font-body mb-10">Arvaa missä päin maailmaa olet pelkästään katunäkymän perusteella.</p>
-          {!API_KEY && (
-            <div className="glass border border-accent-gold/30 rounded-xl p-4 mb-6 text-sm text-accent-gold/80 font-body">
-              ⚠️ <strong>Kehitystila:</strong> Käytetään tunnettuja sijainteja testaamiseen.
+      <>
+        <div className="app-bg" /><div className="app-sun" /><div className="app-grid" /><div className="app-overlay" />
+        <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <div style={{ maxWidth: 480, width: '100%' }}>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: '.08em', color: 'var(--text-mute)', textDecoration: 'none', textTransform: 'uppercase', marginBottom: 36 }}>
+              ← Takaisin
+            </Link>
+
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: '.3em', color: 'var(--neon-cyan)', textTransform: 'uppercase', textShadow: '0 0 6px rgba(0,240,255,.45)', marginBottom: 8 }}>
+              // pelaa
             </div>
-          )}
-          <div className="glass rounded-2xl p-6 mb-6">
-            <div className="text-xs font-display tracking-widest uppercase text-white/30 mb-4">Asetukset</div>
-            <SettingsForm onStart={startGame} />
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 52, color: 'var(--text-bright)', margin: '0 0 8px', lineHeight: 1 }}>
+              <span style={{ color: 'var(--neon-magenta)', textShadow: 'var(--glow-mag)' }}>Street</span> View
+            </h1>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'var(--text-mute)', margin: '0 0 28px' }}>
+              Arvaa missä päin maailmaa olet pelkästään katunäkymän perusteella.
+            </p>
+
+            {!API_KEY && (
+              <div style={{ background: 'rgba(255,214,10,.06)', border: '1px solid rgba(255,214,10,.3)', borderRadius: 6, padding: '12px 16px', marginBottom: 20, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--neon-amber)' }}>
+                ⚠️ Kehitystila — käytetään tunnettuja sijainteja testaamiseen.
+              </div>
+            )}
+
+            <div style={{ background: 'linear-gradient(180deg, rgba(29,18,72,.9), rgba(21,10,54,.9))', border: '1px solid var(--line)', borderRadius: 10, padding: 24 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '.2em', color: 'var(--neon-cyan)', textTransform: 'uppercase', marginBottom: 18 }}>
+                // asetukset
+              </div>
+              <SettingsForm onStart={startGame} />
+            </div>
           </div>
         </div>
-      </div>
+      </>
     )
   }
 
   // ── Loading ───────────────────────────────────────────────────────────────
   if (phase === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center animate-pulse-slow">
-          <div className="font-display text-2xl text-accent-green mb-2">Ladataan sijaintia...</div>
-          <div className="text-white/30 text-sm font-body">Kierros {currentRound} / {settings.totalRounds}</div>
+      <>
+        <div className="app-bg" /><div className="app-sun" /><div className="app-grid" /><div className="app-overlay" />
+        <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: 'var(--neon-cyan)', letterSpacing: '.15em', textShadow: 'var(--glow-cyan)', marginBottom: 10 }}>
+              LADATAAN...
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-mute)' }}>
+              Kierros {currentRound} / {settings.totalRounds}
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
@@ -117,18 +145,39 @@ export default function PlayPage() {
       )}
 
       {/* HUD */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-5 pt-4 pb-2 pointer-events-none">
-        <div className="flex items-center gap-3 pointer-events-auto">
-          <Link href="/" className="glass rounded-xl px-3 py-1.5 text-xs text-white/50 hover:text-white transition-colors font-body">← Menu</Link>
-          <div className="glass rounded-xl px-4 py-1.5 font-display text-sm font-bold text-accent-green">
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px', pointerEvents: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, pointerEvents: 'auto' }}>
+          <Link href="/" style={{
+            fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase',
+            padding: '7px 14px', borderRadius: 6, textDecoration: 'none',
+            background: 'rgba(7,2,26,.82)', border: '1px solid var(--line)',
+            color: 'var(--text-mute)', backdropFilter: 'blur(12px)',
+          }}>← Menu</Link>
+          <div style={{
+            fontFamily: 'var(--font-display)', fontSize: 13, letterSpacing: '.1em',
+            padding: '7px 14px', borderRadius: 6,
+            background: 'rgba(7,2,26,.82)', border: '1px solid rgba(0,240,255,.35)',
+            color: 'var(--neon-cyan)', backdropFilter: 'blur(12px)',
+            textShadow: '0 0 8px rgba(0,240,255,.5)',
+          }}>
             {currentRound} / {settings.totalRounds}
           </div>
         </div>
-        <div className="glass rounded-xl px-5 py-1.5 font-display font-bold text-white">
-          {totalScore.toLocaleString('fi')} <span className="text-accent-green text-sm">p</span>
+        <div style={{
+          fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, letterSpacing: '.05em',
+          padding: '7px 18px', borderRadius: 6,
+          background: 'rgba(7,2,26,.82)', border: '1px solid rgba(255,214,10,.35)',
+          color: 'var(--neon-amber)', backdropFilter: 'blur(12px)',
+          textShadow: '0 0 10px rgba(255,214,10,.5)',
+        }}>
+          {totalScore.toLocaleString('fi')} <span style={{ fontSize: 11, color: 'var(--text-mute)' }}>p</span>
         </div>
         {!isResultPhase && settings.timeLimitSeconds && (
-          <div className="glass rounded-xl px-3 py-1.5 pointer-events-none">
+          <div style={{
+            padding: '7px 14px', borderRadius: 6, pointerEvents: 'none',
+            background: 'rgba(7,2,26,.82)', border: '1px solid var(--line)',
+            backdropFilter: 'blur(12px)',
+          }}>
             <RoundTimer seconds={settings.timeLimitSeconds} onExpire={handleTimerExpire} paused={timerPaused} />
           </div>
         )}
@@ -149,11 +198,16 @@ export default function PlayPage() {
           <button
             onClick={handleSubmitGuess}
             disabled={!currentGuess}
-            className={`absolute bottom-3 left-1/2 -translate-x-1/2 px-6 py-2.5 rounded-xl font-display font-bold text-sm z-10 transition-all duration-150 whitespace-nowrap
-              ${currentGuess
-                ? 'bg-accent-green text-earth-900 hover:bg-accent-lime active:scale-95 shadow-lg shadow-accent-green/30'
-                : 'bg-earth-700/80 text-white/30 cursor-not-allowed'
-              }`}
+            style={{
+              position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
+              padding: '10px 22px', borderRadius: 6, fontFamily: 'var(--font-display)',
+              fontSize: 12, letterSpacing: '.1em', textTransform: 'uppercase',
+              whiteSpace: 'nowrap', zIndex: 10, cursor: currentGuess ? 'pointer' : 'not-allowed',
+              border: 'none', transition: 'all .15s',
+              background: currentGuess ? 'linear-gradient(180deg, var(--neon-magenta), #c61878)' : 'rgba(21,10,54,.8)',
+              color: currentGuess ? 'white' : 'var(--text-dim)',
+              boxShadow: currentGuess ? '0 0 18px rgba(255,45,149,.5)' : 'none',
+            }}
           >
             {currentGuess ? 'Arvaa tämä! →' : 'Valitse sijainti kartalta'}
           </button>
@@ -172,7 +226,7 @@ export default function PlayPage() {
               guessLocation={lastRound.guess}
             />
           </div>
-          <div className="w-full md:w-[340px] bg-earth-900/95 backdrop-blur border-l border-white/5 flex items-center justify-center overflow-y-auto">
+          <div style={{ width: '100%', maxWidth: 340, background: 'rgba(7,2,26,.96)', backdropFilter: 'blur(16px)', borderLeft: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }}>
             <ScoreReveal
               score={lastRound.score}
               distanceKm={lastRound.distanceKm}
@@ -194,37 +248,62 @@ function SettingsForm({ onStart }: { onStart: (s?: any) => void }) {
   const [timeLimit, setTimeLimit] = useState<number | null>(120)
   const [region, setRegion] = useState<'world' | 'europe' | 'asia' | 'americas' | 'africa'>('world')
 
+  const chipBase: React.CSSProperties = {
+    fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: '.08em',
+    padding: '8px 0', borderRadius: 4, textTransform: 'uppercase',
+    border: '1px solid var(--line)', cursor: 'pointer', transition: 'all .12s',
+    background: 'rgba(255,255,255,.03)', color: 'var(--text-mute)', flex: 1,
+  }
+  const chipActive: React.CSSProperties = {
+    ...chipBase,
+    background: 'rgba(255,45,149,.12)', border: '1px solid var(--neon-magenta)',
+    color: 'var(--neon-magenta)', textShadow: '0 0 8px rgba(255,45,149,.45)',
+  }
+
   return (
-    <div className="space-y-5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
-        <label className="text-white/50 text-xs font-body block mb-2">Kierrosten määrä: <span className="text-accent-green font-bold">{rounds}</span></label>
-        <input type="range" min={1} max={10} value={rounds} onChange={e => setRounds(+e.target.value)} className="w-full accent-accent-green" />
+        <label style={{ fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '.15em', color: 'var(--text-mute)', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>
+          Kierrosten määrä: <span style={{ color: 'var(--neon-cyan)' }}>{rounds}</span>
+        </label>
+        <input type="range" min={1} max={10} value={rounds} onChange={e => setRounds(+e.target.value)}
+          style={{ width: '100%', accentColor: 'var(--neon-magenta)' }} />
       </div>
       <div>
-        <label className="text-white/50 text-xs font-body block mb-2">Aikaraja</label>
-        <div className="flex gap-2">
+        <label style={{ fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '.15em', color: 'var(--text-mute)', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>
+          Aikaraja
+        </label>
+        <div style={{ display: 'flex', gap: 8 }}>
           {[null, 60, 120, 180].map(t => (
-            <button key={String(t)} onClick={() => setTimeLimit(t)}
-              className={`flex-1 py-2 rounded-xl text-sm font-display font-bold transition-all ${timeLimit === t ? 'bg-accent-green text-earth-900' : 'glass text-white/50 hover:text-white'}`}>
+            <button key={String(t)} onClick={() => setTimeLimit(t)} style={timeLimit === t ? chipActive : chipBase}>
               {t === null ? '∞' : `${t}s`}
             </button>
           ))}
         </div>
       </div>
       <div>
-        <label className="text-white/50 text-xs font-body block mb-2">Alue</label>
-        <div className="grid grid-cols-3 gap-2">
+        <label style={{ fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '.15em', color: 'var(--text-mute)', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>
+          Alue
+        </label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           {(['world', 'europe', 'asia', 'americas', 'africa'] as const).map(r => (
-            <button key={r} onClick={() => setRegion(r)}
-              className={`py-2 rounded-xl text-xs font-display font-bold transition-all ${region === r ? 'bg-accent-green text-earth-900' : 'glass text-white/50 hover:text-white'}`}>
+            <button key={r} onClick={() => setRegion(r)} style={region === r ? chipActive : chipBase}>
               {r === 'world' ? '🌍 Maailma' : r === 'europe' ? '🇪🇺 Eurooppa' : r === 'asia' ? '🌏 Aasia' : r === 'americas' ? '🌎 Amerikat' : '🌍 Afrikka'}
             </button>
           ))}
         </div>
       </div>
-      <button onClick={() => onStart({ totalRounds: rounds, timeLimitSeconds: timeLimit, region })}
-        className="w-full py-4 rounded-2xl font-display font-bold text-lg bg-accent-green text-earth-900 hover:bg-accent-lime active:scale-95 transition-all duration-150 shadow-lg shadow-accent-green/20 mt-2">
-        Aloita peli 🌍
+      <button
+        onClick={() => onStart({ totalRounds: rounds, timeLimitSeconds: timeLimit, region })}
+        style={{
+          width: '100%', padding: '16px', borderRadius: 6, border: 'none', cursor: 'pointer',
+          fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '.08em', textTransform: 'uppercase',
+          background: 'linear-gradient(180deg, var(--neon-magenta), #c61878)',
+          color: 'white', boxShadow: '0 0 0 2px rgba(255,255,255,.1) inset, 0 4px 0 #7a0c46, 0 0 24px rgba(255,45,149,.5)',
+          marginTop: 4,
+        }}
+      >
+        ▶ Aloita peli
       </button>
     </div>
   )

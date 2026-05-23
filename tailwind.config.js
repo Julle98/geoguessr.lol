@@ -10,20 +10,34 @@ module.exports = {
       fontFamily: {
         display: ['var(--font-display)'],
         body: ['var(--font-body)'],
+        mono: ['var(--font-mono)'],
       },
       colors: {
+        /* keep old names so existing game components don't break */
         earth: {
-          900: '#0a0f0d',
-          800: '#111a16',
-          700: '#1a2820',
-          600: '#243528',
-          500: '#2e4232',
+          900: '#07021a',
+          800: '#0c0526',
+          700: '#150a36',
+          600: '#1d1248',
+          500: '#261566',
         },
         accent: {
-          green: '#4ade80',
-          lime: '#a3e635',
-          gold: '#fbbf24',
-        }
+          green:   '#00f0ff',
+          lime:    '#ff2d95',
+          gold:    '#ffd60a',
+          magenta: '#ff2d95',
+          cyan:    '#00f0ff',
+          amber:   '#ffd60a',
+          violet:  '#b14dff',
+          coral:   '#ff6b35',
+        },
+        neon: {
+          magenta: '#ff2d95',
+          cyan:    '#00f0ff',
+          amber:   '#ffd60a',
+          violet:  '#b14dff',
+          coral:   '#ff6b35',
+        },
       },
       animation: {
         'fade-up': 'fadeUp 0.6s ease forwards',
