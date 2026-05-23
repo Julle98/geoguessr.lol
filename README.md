@@ -4,7 +4,7 @@
 
 A free, open-source geography guessing game. Drop into random Street View locations around the world and guess where you are — scored by distance.
 
-**Live at [geoguessr.lol](https://geoguessr.lol)** *(coming soon)*
+**Live at [geoguessr.lol](https://geoguessr.lol)
 
 ---
 
@@ -38,13 +38,13 @@ A free, open-source geography guessing game. Drop into random Street View locati
 ### Prerequisites
 
 - Node.js 18+
-- Google Maps API key ([get one here](https://console.cloud.google.com))
+- Google Maps API key 
 - Enable: **Maps JavaScript API** and **Street View Static API**
 
 ### Setup
 
 ```bash
-git clone https://github.com/yourusername/geoguessr.lol
+git clone https://github.com/Julle98/geoguessr.lol
 cd geoguessr.lol
 npm install
 cp .env.local.example .env.local
@@ -99,10 +99,10 @@ Same formula as the original — exponential decay based on distance:
 - [x] Distance scoring
 - [x] User accounts & authentication
 - [x] Game history & statistics
+- [x] Leaderboards
 - [ ] Flag quiz
 - [ ] Border quiz
 - [ ] Party mode (real-time multiplayer)
-- [ ] Leaderboards
 - [ ] Custom map regions
 - [ ] Mobile app
 
