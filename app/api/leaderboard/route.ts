@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const topUsers = await prisma.user.findMany({
     select: {
@@ -12,7 +14,6 @@ export async function GET() {
       },
     },
   })
-
   const rows = topUsers
     .map(u => {
       const games = u.gameSessions
@@ -27,6 +28,5 @@ export async function GET() {
     .sort((a: any, b: any) => b.bestGame - a.bestGame)
     .slice(0, 100)
     .map((r: any, i) => ({ ...r, rank: i + 1 }))
-
   return NextResponse.json(rows)
 }
