@@ -116,8 +116,14 @@ Pull requests are welcome. For major changes, open an issue first.
 
 ## License
 
-MIT — do whatever you want, just don't charge people a monthly fee for it. 😄
+MIT — do whatever you want, just don't charge people a monthly fee for it. 
+
+See the [LICENSE](LICENSE) file for full details.
 
 ---
+
+## Credits
+
+Created by Julle98 with assistance from Claude.
 
 *Built as a free alternative to the original. No subscription. No paywalls. Just geography.*
