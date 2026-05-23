@@ -1,6 +1,6 @@
 # 🌍 GeoGuessr.lol
 
-> *The world is your playground. No subscription required.*
+> *Built as a free alternative to the original. No subscription. No paywalls. Just geography.*
 
 A free, open-source geography guessing game. Drop into random Street View locations around the world and guess where you are — scored by distance.
 
@@ -125,5 +125,3 @@ See the [LICENSE](LICENSE) file for full details.
 ## Credits
 
 Created by Julle98 with assistance from Claude.
-
-*Built as a free alternative to the original. No subscription. No paywalls. Just geography.*
