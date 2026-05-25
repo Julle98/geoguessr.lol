@@ -59,11 +59,12 @@ export default function ProfilePage() {
   useEffect(() => {
     if (status !== 'authenticated') return
     fetch('/api/stats')
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => { setStats(data); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [status])
 
-  if (status === 'loading' || loading) {
+  if (status === 'loading' || (status === 'authenticated' && loading)) {
     return (
       <>
         <div className="app-bg" /><div className="app-sun" /><div className="app-grid" /><div className="app-overlay" />

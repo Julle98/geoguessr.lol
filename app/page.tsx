@@ -40,7 +40,10 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    fetch('/api/stats/global').then(r => r.json()).then(setGlobalStats)
+    fetch('/api/stats/global')
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(setGlobalStats)
+      .catch(() => {})
   }, [])
 
   const tickerItems: { tag: string; txt: string }[] = globalStats?.tickerItems?.length
