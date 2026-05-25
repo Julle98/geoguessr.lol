@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useGameStore } from '@/lib/gameStore'
 import { getDevLocation, generateLocation, getFamousSpot, generateOffroadLocation } from '@/lib/locations'
@@ -31,6 +31,14 @@ function getNextLocation(mode: GameMode, region: string, devIdx: number): Locati
 }
 
 export default function PlayPage() {
+  return (
+    <Suspense>
+      <PlayPageInner />
+    </Suspense>
+  )
+}
+
+function PlayPageInner() {
   const searchParams = useSearchParams()
   const urlMode = (searchParams.get('mode') ?? 'classic') as GameMode
 
