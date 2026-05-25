@@ -25,6 +25,7 @@ export function GuessMap({
   const guessMarkerRef = useRef<any>(null)
   const lineRef = useRef<any>(null)
   const [hasGuess, setHasGuess] = useState(false)
+  const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -67,6 +68,8 @@ export function GuessMap({
           onGuessChange(loc)
         })
       }
+
+      setMapReady(true)
     })
 
     return () => { cancelled = true }
@@ -74,7 +77,7 @@ export function GuessMap({
   }, [apiKey])
 
   useEffect(() => {
-    if (!mapRef.current || !actualLocation || !guessLocation) return
+    if (!mapReady || !mapRef.current || !actualLocation || !guessLocation) return
     if (!(window as any).google?.maps) return
 
     const maps = (window as any).google.maps
@@ -124,7 +127,7 @@ export function GuessMap({
     bounds.extend(actualLocation)
     bounds.extend(guessLocation)
     mapRef.current.fitBounds(bounds, 80)
-  }, [actualLocation, guessLocation])
+  }, [mapReady, actualLocation, guessLocation])
 
   return (
     <div className="relative w-full h-full">

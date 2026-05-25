@@ -57,6 +57,13 @@ export default function PlayPage() {
     nextRound()
   }, [nextRound])
 
+  const handleStreetViewNotFound = useCallback(() => {
+    const loc = USE_DEV_LOCATIONS
+      ? getDevLocation(locationIndexRef.current++)
+      : generateLocation(settings.region)
+    setLocation(loc)
+  }, [settings.region, setLocation])
+
   // ── Menu ─────────────────────────────────────────────────────────────────
   if (phase === 'menu') {
     return (
@@ -140,7 +147,20 @@ export default function PlayPage() {
 
       {currentLocation && (
         <div className="absolute inset-0">
-          <StreetView location={currentLocation} apiKey={API_KEY} />
+          {API_KEY ? (
+            <StreetView location={currentLocation} apiKey={API_KEY} onNotFound={handleStreetViewNotFound} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', background: 'linear-gradient(180deg, #07021a 0%, #1a0a30 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 48 }}>🗺️</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, letterSpacing: '.15em', color: 'var(--neon-amber)', textTransform: 'uppercase', textShadow: '0 0 8px rgba(255,214,10,.5)' }}>
+                Kehitystila
+              </div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-mute)', textAlign: 'center', maxWidth: 320 }}>
+                Street View ei ole käytettävissä ilman Google Maps API -avainta.<br />
+                Sijainti: {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
