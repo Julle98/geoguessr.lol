@@ -15,10 +15,13 @@ export interface Round {
 
 export type GamePhase = 'menu' | 'loading' | 'playing' | 'guessing' | 'round_result' | 'game_over'
 
+export type GameMode = 'classic' | 'blitz' | 'famous' | 'offroad' | 'duel'
+
 export interface GameSettings {
   totalRounds: number
   timeLimitSeconds: number | null
   region: 'world' | 'europe' | 'asia' | 'americas' | 'africa'
+  mode: GameMode
 }
 
 export interface GameState {
@@ -30,6 +33,13 @@ export interface GameState {
   currentGuess: Location | null
   totalScore: number
   roundStartTime: number | null
+  // 1v1 duel state
+  duelCurrentPlayer: 1 | 2
+  duelPlayer1Score: number
+  duelPlayer2Score: number
+  duelPlayer1Rounds: Round[]
+  duelPlayer2Rounds: Round[]
+  duelRoundPhase: 'player1' | 'player2' | 'round_result'
 
   // Actions
   startGame: (settings?: Partial<GameSettings>) => void
@@ -44,6 +54,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   totalRounds: 5,
   timeLimitSeconds: 120,
   region: 'world',
+  mode: 'classic',
 }
 
 /** Haversine formula — returns distance in km */
@@ -73,6 +84,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   currentGuess: null,
   totalScore: 0,
   roundStartTime: null,
+  duelCurrentPlayer: 1,
+  duelPlayer1Score: 0,
+  duelPlayer2Score: 0,
+  duelPlayer1Rounds: [],
+  duelPlayer2Rounds: [],
+  duelRoundPhase: 'player1',
 
   startGame: (overrides = {}) => {
     set({
@@ -84,6 +101,12 @@ export const useGameStore = create<GameState>((set, get) => ({
       currentGuess: null,
       currentLocation: null,
       roundStartTime: null,
+      duelCurrentPlayer: 1,
+      duelPlayer1Score: 0,
+      duelPlayer2Score: 0,
+      duelPlayer1Rounds: [],
+      duelPlayer2Rounds: [],
+      duelRoundPhase: 'player1',
     })
   },
 
@@ -142,6 +165,12 @@ export const useGameStore = create<GameState>((set, get) => ({
       currentGuess: null,
       currentLocation: null,
       roundStartTime: null,
+      duelCurrentPlayer: 1,
+      duelPlayer1Score: 0,
+      duelPlayer2Score: 0,
+      duelPlayer1Rounds: [],
+      duelPlayer2Rounds: [],
+      duelRoundPhase: 'player1',
     })
   },
 }))

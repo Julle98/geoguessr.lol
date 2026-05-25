@@ -8,9 +8,11 @@ interface StreetViewProps {
   apiKey: string
   onReady?: () => void
   onNotFound?: () => void
+  hideRoadLabels?: boolean
+  hideLinks?: boolean
 }
 
-export function StreetView({ location, apiKey, onReady, onNotFound }: StreetViewProps) {
+export function StreetView({ location, apiKey, onReady, onNotFound, hideRoadLabels = false, hideLinks = false }: StreetViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const panoramaRef = useRef<any>(null)
   const [status, setStatus] = useState<'loading' | 'ok' | 'not_found'>('loading')
@@ -55,11 +57,11 @@ export function StreetView({ location, apiKey, onReady, onNotFound }: StreetView
                 pov: { heading: Math.random() * 360, pitch: 0 },
                 zoom: 0,
                 addressControl: false,
-                showRoadLabels: false,
+                showRoadLabels: !hideRoadLabels,
                 fullscreenControl: false,
                 motionTracking: false,
                 motionTrackingControl: false,
-                linksControl: true,
+                linksControl: !hideLinks,
                 panControl: true,
                 zoomControl: true,
               }

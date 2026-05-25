@@ -10,21 +10,14 @@ const TAGLINES = [
   'GUESS · CRY · REPEAT',
 ]
 
-const TICKER = [
-  { tag: 'LIVE', txt: '418 peliä käynnissä juuri nyt' },
-  { tag: 'NEW',  txt: 'Chaos Party 2.0 — kuusi uutta powerupia' },
-  { tag: 'LIVE', txt: 'MAPMASTER_99 löysi reittinsä Bogotaan 12m tarkkuudella' },
-  { tag: 'EVT',  txt: 'Viikon haaste: Pohjoismaat — paras keskiarvo voittaa' },
-  { tag: 'LIVE', txt: 'miilaaja päihitti vauhti_42:n 1v1 duelissa 4852-3914' },
-]
 
 const GAME_MODES = [
-  { href: '/play',           icon: '🌍', name: 'Klassikko',    sub: '5 kierrosta · 120s · maailma',  desc: 'Vanha kunnon. Arvaa ja itke kuten ennenkin.', color: 'magenta', live: true },
-  { href: '/play?mode=blitz',icon: '⚡', name: 'BLITZ',        sub: '10 kierrosta · 15s/arvaus',     desc: 'Ei aikaa miettiä. Pelkkä vaisto ja paniikki.', color: 'amber',   hot: true },
-  { href: '#',               icon: '📸', name: 'Famous Spots', sub: 'vain ikoniset paikat',           desc: 'Eiffel, Times Square, Punainen tori. Easy mode.', color: 'cyan', disabled: true },
-  { href: '#',               icon: '🌲', name: 'Off-Road',     sub: 'ei kylttejä · ei autoja',       desc: 'Kasvit, maaperä, taivas. Vaihettelijoille.', color: 'violet', disabled: true },
-  { href: '#',               icon: '⚔️', name: '1v1 Duel',     sub: 'tappio = potkut lobbystä',      desc: 'Kaksi entää, yksi jää.', color: 'coral', disabled: true },
-  { href: '#',               icon: '🎉', name: 'Chaos Party',  sub: 'powerupit + 8 pelaajaa',        desc: 'Sumua, väärennettyjä karttoja, kaaosta. New!', color: 'magenta', hot: true, disabled: true },
+  { href: '/play',                  icon: '🌍', name: 'Klassikko',    sub: '5 kierrosta · 120s · maailma',  desc: 'Vanha kunnon. Arvaa ja itke kuten ennenkin.', color: 'magenta', live: true },
+  { href: '/play?mode=blitz',       icon: '⚡', name: 'BLITZ',        sub: '10 kierrosta · 15s/arvaus',     desc: 'Ei aikaa miettiä. Pelkkä vaisto ja paniikki.', color: 'amber',   hot: true },
+  { href: '/play?mode=famous',      icon: '📸', name: 'Famous Spots', sub: 'vain ikoniset paikat',           desc: 'Eiffel, Times Square, Punainen tori. Easy mode.', color: 'cyan' },
+  { href: '/play?mode=offroad',     icon: '🌲', name: 'Off-Road',     sub: 'ei kylttejä · ei linkkejä',     desc: 'Kasvit, maaperä, taivas. Vaihettelijoille.', color: 'violet' },
+  { href: '/play?mode=duel',        icon: '⚔️', name: '1v1 Duel',     sub: 'sama laite · vuorotellen',      desc: 'Kaksi pelaajaa, yksi laite. Parempi voittaa.', color: 'coral' },
+  { href: '#',                      icon: '🎉', name: 'Chaos Party',  sub: 'powerupit + 8 pelaajaa',        desc: 'Sumua, väärennettyjä karttoja, kaaosta. New!', color: 'magenta', hot: true, disabled: true },
 ]
 
 const TINT: Record<string, string> = {
@@ -39,7 +32,7 @@ export default function HomePage() {
   const { data: session } = useSession()
   const user = session?.user as any
   const [tagIdx, setTagIdx] = useState(0)
-  const [globalStats, setGlobalStats] = useState<{ totalGames: number; totalUsers: number; topScore: number } | null>(null)
+  const [globalStats, setGlobalStats] = useState<{ totalGames: number; totalUsers: number; topScore: number; tickerItems: string[] } | null>(null)
 
   useEffect(() => {
     const id = setInterval(() => setTagIdx(i => (i + 1) % TAGLINES.length), 2600)
@@ -50,7 +43,10 @@ export default function HomePage() {
     fetch('/api/stats/global').then(r => r.json()).then(setGlobalStats)
   }, [])
 
-  const repeated = [...TICKER, ...TICKER]
+  const tickerItems: { tag: string; txt: string }[] = globalStats?.tickerItems?.length
+    ? globalStats.tickerItems.map(txt => ({ tag: 'LIVE', txt }))
+    : [{ tag: 'LIVE', txt: 'Ei vielä pelejä — ole ensimmäinen!' }]
+  const repeated = [...tickerItems, ...tickerItems]
 
   return (
     <>

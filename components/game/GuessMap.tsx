@@ -8,6 +8,8 @@ interface GuessMapProps {
   onGuessChange: (loc: Location) => void
   actualLocation?: Location | null
   guessLocation?: Location | null
+  extraGuessLocation?: Location | null
+  extraGuessLabel?: string
   interactive?: boolean
 }
 
@@ -16,6 +18,8 @@ export function GuessMap({
   onGuessChange,
   actualLocation,
   guessLocation,
+  extraGuessLocation,
+  extraGuessLabel,
   interactive = true,
 }: GuessMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -23,7 +27,9 @@ export function GuessMap({
   const markerRef = useRef<any>(null)
   const actualMarkerRef = useRef<any>(null)
   const guessMarkerRef = useRef<any>(null)
+  const extraGuessMarkerRef = useRef<any>(null)
   const lineRef = useRef<any>(null)
+  const extraLineRef = useRef<any>(null)
   const [hasGuess, setHasGuess] = useState(false)
   const [mapReady, setMapReady] = useState(false)
 
@@ -84,8 +90,11 @@ export function GuessMap({
 
     if (actualMarkerRef.current) actualMarkerRef.current.setMap(null)
     if (guessMarkerRef.current) guessMarkerRef.current.setMap(null)
+    if (extraGuessMarkerRef.current) extraGuessMarkerRef.current.setMap(null)
     if (lineRef.current) lineRef.current.setMap(null)
+    if (extraLineRef.current) extraLineRef.current.setMap(null)
 
+    // P1 guess — cyan
     guessMarkerRef.current = new maps.Marker({
       position: guessLocation,
       map: mapRef.current,
@@ -97,7 +106,7 @@ export function GuessMap({
         strokeColor: '#ffffff',
         strokeWeight: 2,
       },
-      title: 'Arvauksesi',
+      title: extraGuessLocation ? 'Pelaaja 1' : 'Arvauksesi',
     })
 
     actualMarkerRef.current = new maps.Marker({
@@ -117,8 +126,8 @@ export function GuessMap({
     lineRef.current = new maps.Polyline({
       path: [guessLocation, actualLocation],
       geodesic: true,
-      strokeColor: '#fbbf24',
-      strokeOpacity: 0.9,
+      strokeColor: '#4ade80',
+      strokeOpacity: 0.8,
       strokeWeight: 2,
       map: mapRef.current,
     })
@@ -126,8 +135,35 @@ export function GuessMap({
     const bounds = new maps.LatLngBounds()
     bounds.extend(actualLocation)
     bounds.extend(guessLocation)
+
+    // P2 guess — magenta (duel mode)
+    if (extraGuessLocation) {
+      extraGuessMarkerRef.current = new maps.Marker({
+        position: extraGuessLocation,
+        map: mapRef.current,
+        icon: {
+          path: maps.SymbolPath.CIRCLE,
+          scale: 11,
+          fillColor: '#ff2d95',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        },
+        title: extraGuessLabel ?? 'Pelaaja 2',
+      })
+      extraLineRef.current = new maps.Polyline({
+        path: [extraGuessLocation, actualLocation],
+        geodesic: true,
+        strokeColor: '#ff2d95',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        map: mapRef.current,
+      })
+      bounds.extend(extraGuessLocation)
+    }
+
     mapRef.current.fitBounds(bounds, 80)
-  }, [mapReady, actualLocation, guessLocation])
+  }, [mapReady, actualLocation, guessLocation, extraGuessLocation, extraGuessLabel])
 
   return (
     <div className="relative w-full h-full">
