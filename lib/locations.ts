@@ -87,3 +87,18 @@ export const DEV_LOCATIONS: Location[] = [
 export function getDevLocation(index: number): Location {
   return DEV_LOCATIONS[index % DEV_LOCATIONS.length]
 }
+
+// Seeded RNG for daily challenge — same locations for everyone on the same day
+function seededRandom(seed: number) {
+  let x = Math.sin(seed + 1) * 10000
+  return x - Math.floor(x)
+}
+
+export function getDailyLocation(roundIndex: number): Location {
+  const today = new Date()
+  const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+  const seed = dateSeed * 10 + roundIndex
+  const lat = seededRandom(seed) * 127 - 55       // -55 to 72
+  const lng = seededRandom(seed + 9999) * 360 - 180 // -180 to 180
+  return { lat, lng }
+}

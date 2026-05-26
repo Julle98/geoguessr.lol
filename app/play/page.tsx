@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useGameStore } from '@/lib/gameStore'
-import { getDevLocation, generateLocation, getFamousSpot, generateOffroadLocation } from '@/lib/locations'
+import { getDevLocation, generateLocation, getFamousSpot, generateOffroadLocation, getDailyLocation } from '@/lib/locations'
 import { StreetView } from '@/components/game/StreetView'
 import { GuessMap } from '@/components/game/GuessMap'
 import { RoundTimer } from '@/components/game/RoundTimer'
@@ -21,12 +21,14 @@ const MODE_DEFAULTS: Record<GameMode, { totalRounds: number; timeLimitSeconds: n
   famous:  { totalRounds: 5,  timeLimitSeconds: 120,  label: '📸 Kuuluisat paikat' },
   offroad: { totalRounds: 5,  timeLimitSeconds: 120,  label: '🌲 Off-Road' },
   duel:    { totalRounds: 5,  timeLimitSeconds: 120,  label: '⚔️ 1v1 Duel' },
+  daily:   { totalRounds: 5,  timeLimitSeconds: 120,  label: '📅 Päivän haaste' },
 }
 
 function getNextLocation(mode: GameMode, region: string, devIdx: number): Location {
   if (USE_DEV_LOCATIONS) return getDevLocation(devIdx)
   if (mode === 'famous') return getFamousSpot(devIdx)
   if (mode === 'offroad') return generateOffroadLocation()
+  if (mode === 'daily') return getDailyLocation(devIdx)
   return generateLocation(region as any)
 }
 
@@ -157,6 +159,7 @@ function PlayPageInner() {
               {urlMode === 'offroad' && 'Ei kaupunkeja, ei kylttejä — pelkkä luonto ja vaisto.'}
               {urlMode === 'blitz' && 'Ei aikaa miettiä. Pelkkä vaisto ja paniikki.'}
               {urlMode === 'duel' && 'Kaksi pelaajaa, sama laite. Vuorotellen — parempi voittaa.'}
+              {urlMode === 'daily' && 'Samat 5 sijaintia kaikille tänään. Vertaa tuloksiasi muihin!'}
               {(urlMode === 'classic' || !urlMode) && 'Arvaa missä päin maailmaa olet pelkästään katunäkymän perusteella.'}
             </p>
 

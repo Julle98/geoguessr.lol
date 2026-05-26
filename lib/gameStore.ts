@@ -15,7 +15,7 @@ export interface Round {
 
 export type GamePhase = 'menu' | 'loading' | 'playing' | 'guessing' | 'round_result' | 'game_over'
 
-export type GameMode = 'classic' | 'blitz' | 'famous' | 'offroad' | 'duel'
+export type GameMode = 'classic' | 'blitz' | 'famous' | 'offroad' | 'duel' | 'daily'
 
 export interface GameSettings {
   totalRounds: number

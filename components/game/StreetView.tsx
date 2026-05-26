@@ -54,7 +54,7 @@ export function StreetView({ location, apiKey, onReady, onNotFound, hideRoadLabe
               containerRef.current,
               {
                 pano: data.location.pano,
-                pov: { heading: Math.random() * 360, pitch: 0 },
+                pov: { heading: Math.random() * 360, pitch: -10 },
                 zoom: 0,
                 addressControl: false,
                 showRoadLabels: !hideRoadLabels,

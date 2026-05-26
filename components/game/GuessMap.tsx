@@ -3,6 +3,13 @@ import { useEffect, useRef, useState } from 'react'
 import type { Location } from '@/lib/gameStore'
 import { loadGoogleMaps } from '@/lib/maps'
 
+export interface PartyPlayerGuess {
+  name: string
+  color: string
+  lat: number
+  lng: number
+}
+
 interface GuessMapProps {
   apiKey: string
   onGuessChange: (loc: Location) => void
@@ -11,6 +18,7 @@ interface GuessMapProps {
   extraGuessLocation?: Location | null
   extraGuessLabel?: string
   interactive?: boolean
+  partyGuesses?: PartyPlayerGuess[]
 }
 
 export function GuessMap({
@@ -21,6 +29,7 @@ export function GuessMap({
   extraGuessLocation,
   extraGuessLabel,
   interactive = true,
+  partyGuesses,
 }: GuessMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
@@ -28,6 +37,8 @@ export function GuessMap({
   const actualMarkerRef = useRef<any>(null)
   const guessMarkerRef = useRef<any>(null)
   const extraGuessMarkerRef = useRef<any>(null)
+  const partyMarkersRef = useRef<any[]>([])
+  const partyLinesRef = useRef<any[]>([])
   const lineRef = useRef<any>(null)
   const extraLineRef = useRef<any>(null)
   const [hasGuess, setHasGuess] = useState(false)
@@ -164,6 +175,58 @@ export function GuessMap({
 
     mapRef.current.fitBounds(bounds, 80)
   }, [mapReady, actualLocation, guessLocation, extraGuessLocation, extraGuessLabel])
+
+  // Party mode: render all players' guesses
+  useEffect(() => {
+    if (!mapReady || !mapRef.current || !actualLocation || !partyGuesses?.length) return
+    if (!(window as any).google?.maps) return
+
+    const maps = (window as any).google.maps
+
+    // Clear old party markers/lines
+    partyMarkersRef.current.forEach(m => m.setMap(null))
+    partyLinesRef.current.forEach(l => l.setMap(null))
+    partyMarkersRef.current = []
+    partyLinesRef.current = []
+
+    if (actualMarkerRef.current) actualMarkerRef.current.setMap(null)
+    actualMarkerRef.current = new maps.Marker({
+      position: actualLocation,
+      map: mapRef.current,
+      icon: { path: maps.SymbolPath.CIRCLE, scale: 14, fillColor: '#fbbf24', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 },
+      title: 'Oikea sijainti',
+      zIndex: 100,
+    })
+
+    const bounds = new maps.LatLngBounds()
+    bounds.extend(actualLocation)
+
+    partyGuesses.forEach(pg => {
+      if (pg.lat === 0 && pg.lng === 0) return // no guess made
+      const pos = { lat: pg.lat, lng: pg.lng }
+      bounds.extend(pos)
+
+      const marker = new maps.Marker({
+        position: pos,
+        map: mapRef.current,
+        icon: { path: maps.SymbolPath.CIRCLE, scale: 11, fillColor: pg.color, fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 },
+        title: pg.name,
+        zIndex: 50,
+      })
+      const line = new maps.Polyline({
+        path: [pos, actualLocation],
+        geodesic: true,
+        strokeColor: pg.color,
+        strokeOpacity: 0.7,
+        strokeWeight: 2,
+        map: mapRef.current,
+      })
+      partyMarkersRef.current.push(marker)
+      partyLinesRef.current.push(line)
+    })
+
+    mapRef.current.fitBounds(bounds, 60)
+  }, [mapReady, actualLocation, partyGuesses])
 
   return (
     <div className="relative w-full h-full">

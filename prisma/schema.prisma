@@ -42,3 +42,44 @@ model Round {
   timeMs        Int
   session       GameSession @relation(fields: [sessionId], references: [id])
 }
+
+model Party {
+  id            String         @id @default(cuid())
+  code          String         @unique
+  mode          String         @default("classic")
+  region        String         @default("world")
+  totalRounds   Int            @default(5)
+  timeLimitSecs Int?
+  currentRound  Int            @default(1)
+  phase         String         @default("waiting") // waiting | playing | round_result | game_over
+  actualLat     Float?
+  actualLng     Float?
+  roundStartedAt DateTime?
+  createdAt     DateTime       @default(now())
+  members       PartyMember[]
+  guesses       PartyGuess[]
+}
+
+model PartyMember {
+  id          String   @id @default(cuid())
+  partyId     String
+  name        String
+  color       String   @default("#4ade80")
+  totalScore  Int      @default(0)
+  joinedAt    DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+  party       Party    @relation(fields: [partyId], references: [id])
+}
+
+model PartyGuess {
+  id          String   @id @default(cuid())
+  partyId     String
+  memberId    String
+  round       Int
+  guessLat    Float
+  guessLng    Float
+  score       Int
+  distanceKm  Float
+  lockedAt    DateTime @default(now())
+  party       Party    @relation(fields: [partyId], references: [id])
+}

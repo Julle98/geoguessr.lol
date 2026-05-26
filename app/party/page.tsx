@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const GAME_MODES = [
   { id: 'classic',  name: 'Klassikko',  sub: '5 kierrosta · 120s · maailma',  icon: '🌍', color: 'magenta', desc: 'Vanha kunnon. Arvaa ja itke.',                  rounds: 5,  timer: 120, available: true },
@@ -33,6 +34,7 @@ function randCode() {
 
 export default function PartyPage() {
   const { data: session } = useSession()
+  const router = useRouter()
   const [mode, setMode] = useState('classic')
   const [region, setRegion] = useState('world')
   const [rounds, setRounds] = useState(5)
@@ -41,14 +43,36 @@ export default function PartyPage() {
   const [privacy, setPrivacy] = useState<'private' | 'friends' | 'public'>('private')
   const [code] = useState(randCode)
   const [copied, setCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
 
   const selectedMode = GAME_MODES.find(m => m.id === mode)!
+  const user = (session?.user as any)
+  const hostName = user?.username ?? 'Hosti'
 
+  const inviteUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/p/${code}`
+    : `/p/${code}`
 
   function copyCode() {
     navigator.clipboard.writeText(code)
     setCopied(true)
     setTimeout(() => setCopied(false), 1800)
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(inviteUrl)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 1800)
+  }
+
+  async function createParty() {
+    const res = await fetch('/api/party/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, mode, region, totalRounds: rounds, timeLimitSecs: timer, hostName }),
+    })
+    const data = await res.json()
+    router.push(`/party/${code}/play?mid=${data.memberId}&host=1`)
   }
 
   return (
@@ -78,15 +102,15 @@ export default function PartyPage() {
           </div>
         </nav>
 
-        {/* Coming soon banner */}
+        {/* Active banner */}
         <div style={{
-          background: 'rgba(255,214,10,.06)', borderBottom: '1px solid rgba(255,214,10,.25)',
+          background: 'rgba(0,240,255,.05)', borderBottom: '1px solid rgba(0,240,255,.2)',
           padding: '10px 28px', display: 'flex', alignItems: 'center', gap: 10,
-          fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--neon-amber)',
+          fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--neon-cyan)',
         }}>
-          <span style={{ fontSize: 16 }}>🚧</span>
-          <span>Party-moodi on kehitteillä — voit esikatsella asetuksia, mutta peliä ei voi vielä luoda.</span>
-          <Link href="/play" style={{ marginLeft: 'auto', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--neon-cyan)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 16 }}>🎉</span>
+          <span>Jaa linkki kavereille — kaikki voivat liittyä ilman tiliä ja pelata samoilla asetuksilla.</span>
+          <Link href="/play" style={{ marginLeft: 'auto', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--text-mute)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
             Pelaa solo →
           </Link>
         </div>
@@ -229,19 +253,32 @@ export default function PartyPage() {
                 </div>
 
                 {/* Invite link */}
-                <div style={{ marginBottom: 14, padding: 10, background: 'var(--bg-deep)', border: '1px dashed var(--line)', borderRadius: 4, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--neon-cyan)', wordBreak: 'break-all' }}>
-                  geoguessr.lol/p/<b style={{ color: 'var(--neon-magenta)' }}>{code}</b>
+                <div style={{ marginBottom: 8, padding: 10, background: 'var(--bg-deep)', border: '1px dashed rgba(0,240,255,.3)', borderRadius: 4, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--neon-cyan)', wordBreak: 'break-all' }}>
+                  {`/p/`}<b style={{ color: 'var(--neon-magenta)' }}>{code}</b>
                 </div>
 
-                <button disabled style={{
+                <button onClick={copyLink} style={{
                   display: 'block', textAlign: 'center', width: '100%',
-                  background: 'rgba(255,255,255,.04)', color: 'var(--text-dim)',
-                  border: '1px solid var(--line)',
-                  fontFamily: 'var(--font-display)', fontSize: 15, letterSpacing: '.08em',
-                  padding: '16px', borderRadius: 6, cursor: 'not-allowed',
-                  textTransform: 'uppercase', marginBottom: 8,
+                  background: linkCopied ? 'rgba(0,240,255,.12)' : 'rgba(0,240,255,.06)',
+                  color: 'var(--neon-cyan)',
+                  border: '1px solid rgba(0,240,255,.3)',
+                  fontFamily: 'var(--font-display)', fontSize: 12, letterSpacing: '.08em',
+                  padding: '11px', borderRadius: 6, cursor: 'pointer',
+                  textTransform: 'uppercase', marginBottom: 8, transition: 'all .15s',
                 }}>
-                  🚧 Tulossa pian
+                  {linkCopied ? '✓ Linkki kopioitu!' : '⧉ Kopioi kutsulinki'}
+                </button>
+
+                <button onClick={createParty} style={{
+                  display: 'block', textAlign: 'center', width: '100%',
+                  background: 'linear-gradient(180deg, var(--neon-magenta), #c61878)',
+                  color: 'white', border: 'none',
+                  fontFamily: 'var(--font-display)', fontSize: 15, letterSpacing: '.08em',
+                  padding: '16px', borderRadius: 6, cursor: 'pointer',
+                  textTransform: 'uppercase', marginBottom: 8,
+                  boxShadow: '0 0 18px rgba(255,45,149,.5)',
+                }}>
+                  ▶ Aloita party
                 </button>
 
                 <Link href="/" style={{
@@ -257,7 +294,7 @@ export default function PartyPage() {
 
               {/* Info note */}
               <div style={{ padding: '14px 16px', background: 'rgba(0,240,255,.04)', border: '1px solid rgba(0,240,255,.15)', borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-mute)', lineHeight: 1.6 }}>
-                <span style={{ color: 'var(--neon-cyan)' }}>ⓘ</span> Party-moodi on tulossa. Tällä hetkellä voit pelata soolo-pelinä ja haastaa kaverisi koodilla.
+                <span style={{ color: 'var(--neon-cyan)' }}>ⓘ</span> Jaa kutsulinki — kaverit voivat liittyä ilman tiliä ja pelata samoilla asetuksilla. Live-moninpeli tulossa myöhemmin.
               </div>
             </div>
           </div>

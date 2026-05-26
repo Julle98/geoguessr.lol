@@ -16,7 +16,7 @@ const GAME_MODES = [
   { href: '/play?mode=blitz',       icon: '⚡', name: 'BLITZ',        sub: '10 kierrosta · 15s/arvaus',     desc: 'Ei aikaa miettiä. Pelkkä vaisto ja paniikki.', color: 'amber',   hot: true },
   { href: '/play?mode=famous',      icon: '📸', name: 'Famous Spots', sub: 'vain ikoniset paikat',           desc: 'Eiffel, Times Square, Punainen tori. Easy mode.', color: 'cyan' },
   { href: '/play?mode=offroad',     icon: '🌲', name: 'Off-Road',     sub: 'ei kylttejä · ei linkkejä',     desc: 'Kasvit, maaperä, taivas. Vaihettelijoille.', color: 'violet' },
-  { href: '/play?mode=duel',        icon: '⚔️', name: '1v1 Duel',     sub: 'sama laite · vuorotellen',      desc: 'Kaksi pelaajaa, yksi laite. Parempi voittaa.', color: 'coral' },
+  { href: '/play?mode=daily',       icon: '📅', name: 'Päivän haaste', sub: 'sama haaste · kaikille tänään', desc: 'Samat 5 sijaintia kaikille tänään. Palaa huomenna uusiin.', color: 'coral' },
   { href: '#',                      icon: '🎉', name: 'Chaos Party',  sub: 'powerupit + 8 pelaajaa',        desc: 'Sumua, väärennettyjä karttoja, kaaosta. New!', color: 'magenta', hot: true, disabled: true },
 ]
 
