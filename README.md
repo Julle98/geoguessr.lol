@@ -4,7 +4,7 @@
 
 A free, open-source geography guessing game. Drop into random Street View locations around the world and guess where you are — scored by distance.
 
-Live at [geoguessr.lol](https://geoguessr.lol)
+Not currently in any site hosted worldwide. Self-hosting allowed.
 
 ---
 
